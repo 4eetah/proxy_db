@@ -1,6 +1,7 @@
 from lxml import html as xhtml
 import re
-from logger import logger
+import logger
+from logger import logger as log
 from pyparallelcurl import ParallelCurl, Proxy
 import pycurl
 from StringIO import StringIO
@@ -32,7 +33,7 @@ class MyCurl(object):
             ch.perform()
             page = buf.getvalue()
         except Exception, e:
-            logger.warn(str(e) + ' , url: ' + url)
+            log.warn(str(e) + ' , url: ' + url)
             page = None
         buf.close()
         ch.close()
@@ -54,7 +55,7 @@ def http_free_proxy(url):
         if not page:
             raise Exception()
     except Exception, e:
-        logger.critical(str(e) + ', unable to fetch proxylist page: ' + url)
+        log.critical(str(e) + ', unable to fetch proxylist page: ' + url)
         return proxylist
 
     xtree = xhtml.fromstring(page)
@@ -83,7 +84,7 @@ def socks_free_proxy(url):
         if not page:
             raise Exception()
     except Exception, e:
-        logger.critical(str(e) + ', unable to fetch proxylist page: ' + url)
+        log.critical(str(e) + ', unable to fetch proxylist page: ' + url)
         return proxylist
 
     xtree = xhtml.fromstring(page)
@@ -119,10 +120,10 @@ def on_page_recv(content, url, ch, user_data):
     if content and code == 200:
         result = user_data['result']
         if re.search('(%s)' % keyword, content):
-            logger.info('Good proxy: %s://%s:%s, response code: %s, keyword match: %s' % (proxy['type'], proxy['ip'], proxy['port'], str(code), keyword))
+            log.info('Good proxy: %s://%s:%s, response code: %s, keyword match: %s' % (proxy['type'], proxy['ip'], proxy['port'], str(code), keyword))
             result.append(proxy)
             return
-    logger.info('Bad proxy: %s://%s:%s' % (proxy['type'], proxy['ip'], proxy['port']))
+    log.info('Bad proxy: %s://%s:%s' % (proxy['type'], proxy['ip'], proxy['port']))
 
 def make_good():
     pcurl = ParallelCurl(100)
@@ -148,4 +149,5 @@ def make_steroids():
             f.write(row)
 
 if __name__ == '__main__':
+    print '`tail -f %s` to see progress' % logger.log_file
     make_steroids()
