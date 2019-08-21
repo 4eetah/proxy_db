@@ -1,3 +1,8 @@
+proxy_db
+========
+Scrap the list of free proxy from the website, validate if proxy is alive
+and put into sqlite database
+
 depends
 =======
 lxml
