@@ -206,7 +206,10 @@ class Proxy(object):
             raise NoSteroidsFoundException('not enough steroids, need > %s' % str(self.enough))
         self.proxies = []
         for p in lines:
-            ip, port, ptype = p.split()
+            ll = p.split(',')
+            ip = ll[0]
+            port = ll[1]
+            ptype = ll[2]
             record = {}
             record['ip'] = ip
             record['port'] = int(port)

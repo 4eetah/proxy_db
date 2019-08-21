@@ -135,18 +135,27 @@ def make_good():
     return records
 
 def make_steroids():
-    records = make_bad()
+    records_table = {}
+    records_all = make_bad()
     with open(bad_steroids, 'wb') as f:
-        for r in records:
-            l = [r['ip'], r['port'], r['type']]
-            row = ' '.join(l) + '\n'
+        for r in records_all:
+            key = r['ip'] + ':' + r['port']
+            records_table[key] = r
+            country = r['country'].replace(',', ' ')
+            l = [r['ip'], r['port'], r['type'], r['code'], country]
+            row = ','.join(l) + '\n'
             f.write(row)
+
     records = make_good()
+
     with open(good_steroids, 'wb') as f:
         for r in records:
-            l = [r['ip'], str(r['port']), r['type']]
-            row = ' '.join(l) + '\n'
-            f.write(row)
+            ip_port = r['ip'] + ':' + str(r['port'])
+            d = records_table.get(ip_port)
+            if d:
+                l = [d['ip'], d['port'], d['type'], d['code'], d['country']]
+                row = ','.join(l) + '\n'
+                f.write(row)
 
 if __name__ == '__main__':
     print '`tail -f %s` to see progress' % logger.log_file
